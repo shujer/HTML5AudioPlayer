@@ -87,8 +87,6 @@ class AudioVisualize {
             return;
         }
         let pannerOptions = { pan: 0 };
-        console.log( this.audioContext.createGain);
-        // this.gainNode = this.audioContext.createGain();
         this.gainNode = this.audioContext.createGain();
         this.panner = this.audioContext.createStereoPanner();
         this.panner.pan.value = 0.0;
