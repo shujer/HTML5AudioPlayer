@@ -1,0 +1,603 @@
+:root {
+    --main-color: #333;
+    --border-color: #fff;
+    --cassette-size: 200px;
+    --border-weight: 3px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+    font-size: 14px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    background: var(--main-color);
+    color: var(--border-color);
+    font-family: 'Patrick Hand SC', cursive;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    /* Firefox */
+    -webkit-box-sizing: border-box;
+    /* Safari */
+}
+
+/* layoout */
+aside {
+    margin-top: 20px;
+    -ms-flex-preferred-size: calc(var(--cassette-size) * 1.2);
+    flex-basis: calc(var(--cassette-size) * 1.2);
+    -webkit-box-flex: 0;
+    -ms-flex-positive: 0;
+    flex-grow: 0;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+}
+
+main {
+    margin-top: 20px;
+    -webkit-box-flex: 1;
+    -ms-flex: auto;
+    flex: auto;
+}
+
+aside .cassette {
+    margin: 20px auto;
+}
+
+/* cassette */
+.cassette {
+    margin: auto auto;
+    position: relative;
+    color: var(--border-color);
+    width: var(--cassette-size);
+    height: calc(var(--cassette-size) / 9 * 6);
+    border: var(--border-weight) solid var(--border-color);
+    border-radius: var(--border-weight);
+    -webkit-border-radius: var(--border-weight);
+    -moz-border-radius: var(--border-weight);
+    -ms-border-radius: var(--border-weight);
+    -o-border-radius: var(--border-weight);
+    -webkit-box-shadow: 0 0 10px lightgray;
+    box-shadow: 0 0 10px lightgray;
+    z-index: 9;
+}
+
+.cassette:hover {
+    -webkit-transform: scale3d(1.05, 1.05, 1) translate3d(0, 0, 0);
+    -moz-transform: scale3d(1.05, 1.05, 1) translate3d(0, 0, 0);
+    -ms-transform: scale3d(1.05, 1.05, 1) translate3d(0, 0, 0);
+    -o-transform: scale3d(1.05, 1.05, 1) translate3d(0, 0, 0);
+}
+
+
+.cassette i[class|="pin"] {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    margin: 2px 2px;
+}
+
+.cassette i[class|="pin"][class*="-left"] {
+    left: 0px;
+}
+
+.cassette i[class|="pin"][class*="-right"] {
+    right: 0px;
+}
+
+.cassette i[class|="pin"][class*="-bottom"] {
+    bottom: 0px;
+}
+
+.cassette i[class|="pin"][class*="-top"] {
+    top: 0px;
+}
+
+.cassette .cassette-inner {
+    width: 90%;
+    height: 90%;
+    margin: 5% auto 5% auto;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: space-around;
+    -ms-flex-pack: space-around;
+    justify-content: space-around;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.cassette-inner .cassette-content {
+    width: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -ms-flex-preferred-size: 60%;
+    flex-basis: 70%;
+    -webkit-box-flex: 0;
+    -ms-flex-positive: 0;
+    flex-grow: 0;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+    border: var(--border-weight) solid var(--border-color);
+    border-radius: var(--border-weight);
+    -webkit-border-radius: var(--border-weight);
+    -moz-border-radius: var(--border-weight);
+    -ms-border-radius: var(--border-weight);
+    -o-border-radius: var(--border-weight);
+}
+
+.cassette-content .cassette-info {
+    text-align: left;
+    width: 90%;
+    height: 25px;
+    margin: 2px auto;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.cassette-content .cassette-info span {
+    display: inline-block;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.cassette-content .cassette-info .logo {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-color);
+    line-height: 20px;
+    text-align: center;
+}
+
+.cassette-content .cassette-info .title {
+    width: 100%;
+    height: 20px;
+    line-height: 20px;
+    background-image: -webkit-gradient(linear, left bottom, left top, from(var(--border-color)), color-stop(20%, transparent));
+    background-image: linear-gradient(0deg, var(--border-color) 0%, transparent 20%);
+    background-size: 100% 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.cassette-content .cassette-tape-container {
+    position: relative;
+    width: 90%;
+    height: 60%;
+    margin: 2px auto;
+    border: var(--border-weight) solid var(--border-color);
+    border-radius: var(--border-weight);
+    -webkit-border-radius: var(--border-weight);
+    -moz-border-radius: var(--border-weight);
+    -ms-border-radius: var(--border-weight);
+    -o-border-radius: var(--border-weight);
+    overflow: hidden;
+}
+
+.cassette-tape-container div[class|="cassette-tape"] {
+    position: absolute;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    width: calc(var(--cassette-size) * .15);
+    height: calc(var(--cassette-size) * .15);
+    border: calc(var(--cassette-size) * .15) solid var(--border-color);
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+}
+
+.cassette-tape-container div[class|="cassette-tape"][class*="-left"] {
+    top: 0;
+    left: 0;
+    transform: translate3d(-20px, calc(0px - var(--cassette-size) * .1), 0);
+    -webkit-transform: translate3d(-20px, calc(0px - var(--cassette-size) * .1), 0);
+    -moz-transform: translate3d(-20px, calc(0px - var(--cassette-size) * .1), 0);
+    -ms-transform: translate3d(-20px, calc(0px - var(--cassette-size) * .1), 0);
+    -o-transform: translate3d(-20px, calc(0px - var(--cassette-size) * .1), 0);
+}
+
+.cassette-tape-container div[class|="cassette-tape"] .cassette-circle-outer {
+    width: 22px;
+    height: 22px;
+    border: var(--border-weight) solid var(--border-color);
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+}
+
+.cassette-tape-container div[class|="cassette-tape"][class*="-right"] {
+    top: 0;
+    right: 0;
+    transform: translate3d(20px, calc(0px - var(--cassette-size) * .1), 0);
+    -webkit-transform: translate3d(20px, calc(0px - var(--cassette-size) * .1), 0);
+    -moz-transform: translate3d(20px, calc(0px - var(--cassette-size) * .1), 0);
+    -ms-transform: translate3d(20px, calc(0px - var(--cassette-size) * .1), 0);
+    -o-transform: translate3d(20px, calc(0px - var(--cassette-size) * .1), 0);
+}
+
+.cassette-tape-container .cassette-circle-inner {
+    position: relative;
+    width: 18px;
+    height: 18px;
+}
+
+.cassette-tape-container .cassette-circle-inner .sawtooth {
+    position: absolute;
+    display: inline-block;
+    top: 9px;
+    left: 9px;
+    width: 4px;
+    height: 4px;
+    background-color: var(--border-color);
+}
+
+
+.cassette .cassette-footer {
+    width: 70%;
+    -ms-flex-preferred-size: 15%;
+    flex-basis: 15%;
+    -webkit-box-flex: 0;
+    -ms-flex-positive: 0;
+    flex-grow: 0;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+    border: var(--border-weight) solid var(--border-color);
+    border-radius: var(--border-weight);
+    -webkit-border-radius: var(--border-weight);
+    -moz-border-radius: var(--border-weight);
+    -ms-border-radius: var(--border-weight);
+    -o-border-radius: var(--border-weight);
+    background-image: -webkit-gradient(linear, left bottom, left top, from(var(--border-color)), color-stop(60%, transparent));
+    background-image: linear-gradient(0deg, var(--border-color) 0%, transparent 60%);
+    background-size: 100% 4px;
+}
+
+.cassette-tape-container .cassette-circle-inner>i:nth-of-type(6) {
+    -webkit-transform: translate3d(0px, 9.5px, 0) rotate(-180deg);
+    transform: translate3d(0px, 9.5px, 0) rotate(-180deg);
+}
+
+.cassette-tape-container .cassette-circle-inner>i:nth-of-type(5) {
+    -webkit-transform: translate3d(-8.22724134px, 4.75px, 0) rotate(-150deg);
+    transform: translate3d(-8.22724134px, 4.75px, 0) rotate(-150deg);
+}
+
+.cassette-tape-container .cassette-circle-inner>i:nth-of-type(4) {
+    -webkit-transform: translate3d(-8.22724134px, -4.75px, 0) rotate(-120deg);
+    transform: translate3d(-8.22724134px, -4.75px, 0) rotate(-120deg);
+}
+
+.cassette-tape-container .cassette-circle-inner>i:nth-of-type(3) {
+    -webkit-transform: translate3d(0px, -9.5px, 0) rotate(-90deg);
+    transform: translate3d(0px, -9.5px, 0) rotate(-90deg);
+}
+
+.cassette-tape-container .cassette-circle-inner>i:nth-of-type(2) {
+    -webkit-transform: translate3d(8.22724134px, -4.75px, 0) rotate(-60deg);
+    transform: translate3d(8.22724134px, -4.75px, 0) rotate(-60deg);
+}
+
+.cassette-tape-container .cassette-circle-inner>i:nth-of-type(1) {
+    -webkit-transform: translate3d(8.22724134px, 4.75px, 0) rotate(-30deg);
+    transform: translate3d(8.22724134px, 4.75px, 0) rotate(-30deg);
+}
+
+
+/* cassette player */
+.boom-box {
+    position: relative;
+    margin: 10px auto;
+    width: calc(var(--cassette-size) * 3 + var(--border-weight) * 6);
+}
+
+.boom-box .boom-handler {
+    position: absolute;
+    left: 15%;
+    width: 70%;
+    height: 50px;
+    border-width: calc(var(--border-weight) * 4) calc(var(--border-weight) * 2) 0 calc(var(--border-weight) * 2);
+    border-color: var(--border-color);
+    border-style: solid;
+}
+
+.boom-box .boom-player {
+    position: absolute;
+    top: calc(50px + var(--border-weight) * 4);
+    width: 100%;
+    height: auto;
+    padding: 2%;
+    border: calc(var(--border-weight) * 2) solid var(--border-color);
+}
+
+.boom-box .boom-nav {
+    height: 100px;
+    width: 100%;
+    border-bottom: calc(var(--border-weight) * 2) solid var(--border-color)
+}
+
+fieldset {
+    font-size: 14px;
+    text-align: center;
+    padding: 5px 5px;
+}
+
+.boom-player .boom-bottom {
+    height: calc(var(--cassette-size) * 1.1);
+    width: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: space-around;
+    -ms-flex-pack: space-around;
+    justify-content: space-around;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.boom-bottom .boom-circle {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: space-around;
+    -ms-flex-pack: space-around;
+    justify-content: space-around;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    width: calc(var(--cassette-size) - 30px);
+    height: calc(var(--cassette-size) - 30px);
+    border: var(--border-weight) solid var(--border-color);
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+    background-color: var(--border-color);
+}
+
+.boom-circle .boom-circle-inner {
+    width: calc(var(--cassette-size) / 4);
+    height: calc(var(--cassette-size) / 4);
+    background-color: var(--main-color);
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+}
+
+.boom-bottom .cassette-box {
+    margin: auto auto;
+    color: var(--border-color);
+    width: calc(var(--cassette-size) + var(--border-weight) * 2);
+    height: calc(var(--cassette-size) / 9 * 6 + var(--border-weight) * 2);
+    border: calc(var(--border-weight) * 2) solid var(--border-color);
+    border-radius: var(--border-weight);
+    -webkit-border-radius: var(--border-weight);
+    -moz-border-radius: var(--border-weight);
+    -ms-border-radius: var(--border-weight);
+    -o-border-radius: var(--border-weight);
+    background-color: rgba(51, 51, 51, .2);
+}
+
+.boom-bottom .cassette-box::before {
+    position: absolute;
+    content: "";
+    display: block;
+    width: calc(var(--cassette-size) + var(--border-weight) * 2);
+    height: calc(var(--cassette-size) / 9 * 6 + var(--border-weight) * 2);
+    background-color: rgba(51, 51, 51, .4);
+    transform: translate3d(0, 0%, 0);
+    z-index: 99;
+    -webkit-transform: translate3d(0, 0%, 0);
+    -moz-transform: translate3d(0, 0%, 0);
+    -ms-transform: translate3d(0, 0%, 0);
+    -o-transform: translate3d(0, 0%, 0);
+}
+
+.boom-nav {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: space-around;
+    -ms-flex-pack: space-around;
+    justify-content: space-around;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.boom-nav .boom-controls {
+    width: 35%;
+    height: 90px;
+}
+
+.boom-nav .boom-controls .boom-contrl-range {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: space-around;
+    -ms-flex-pack: space-around;
+    justify-content: space-around;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    height: 40px;
+}
+
+.boom-nav .boom-data {
+    width: 60%;
+    height: 80px;
+    border: var(--border-weight) solid var(--border-color);
+    border-radius: var(--border-weight);
+    -webkit-border-radius: var(--border-weight);
+    -moz-border-radius: var(--border-weight);
+    -ms-border-radius: var(--border-weight);
+    -o-border-radius: var(--border-weight);
+}
+
+.boom-data .audio-analyse {
+    width: 100%;
+    height: 80px;
+}
+
+.boom-controls input {
+    display: inline-block;
+    width: 90%;
+}
+
+.boom-controls label {
+    display: inline-block;
+    width: 10%;
+}
+
+.boom-bottom .control-play {
+    background-color: var(--border-color);
+    outline: none;
+    border: none;
+    padding: 0;
+    height: 20px;
+    width: var(--cassette-size);
+}
+
+
+/* data item */
+
+
+/* input range
+ * refer to https://codepen.io/Rumyra/pen/qyMzqN/ 
+ * fix IE
+*/
+input[type=range] {
+    -webkit-appearance: none;
+    width: 80%;
+    background: transparent;
+}
+
+input[type=range]::-ms-track {
+    width: 100%;
+    cursor: pointer;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    margin-top: -5px;
+    height: 20px;
+    width: 20px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-color);
+    background-color: var(--border-color);
+    cursor: pointer;
+    -webkit-border-radius: var(--border-color);
+    -moz-border-radius: var(--border-color);
+    -ms-border-radius: var(--border-color);
+    -o-border-radius: var(--border-color);
+}
+
+input[type=range]::-moz-range-thumb {
+    height: 20px;
+    width: 20px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-color);
+    background-color: var(--border-color);
+    cursor: pointer;
+    -webkit-border-radius: var(--border-color);
+    -moz-border-radius: var(--border-color);
+    -ms-border-radius: var(--border-color);
+    -o-border-radius: var(--border-color);
+}
+
+input[type=range]::-ms-thumb {
+    height: 20px;
+    width: 20px;
+    border: 2px solid #333;
+    border-radius: var(--border-color);
+    background-color: var(--border-color);
+    cursor: pointer;
+    z-index: 2;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    height: 10px;
+    cursor: pointer;
+    background-color: var(--border-color);
+    border-radius: var(--border-color);
+    -webkit-border-radius: var(--border-color);
+    -moz-border-radius: var(--border-color);
+    -ms-border-radius: var(--border-color);
+    -o-border-radius: var(--border-color);
+}
+
+input[type=range]::-moz-range-track {
+    height: 20px;
+    cursor: pointer;
+    background-color: var(--border-color);
+    border-radius: var(--border-color);
+    -webkit-border-radius: var(--border-color);
+    -moz-border-radius: var(--border-color);
+    -ms-border-radius: var(--border-color);
+    -o-border-radius: var(--border-color);
+}
+
+input[type=range]::-ms-track {
+    height: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    border-radius: var(--border-color);
+    -webkit-border-radius: var(--border-color);
+    -moz-border-radius: var(--border-color);
+    -ms-border-radius: var(--border-color);
+    -o-border-radius: var(--border-color);
+}
+
+input[type=range]:focus {
+    outline: none;
+}
+
+input[type=range]:focus::-webkit-slider-runnable-track {
+    background: var(--border-color);
+}
