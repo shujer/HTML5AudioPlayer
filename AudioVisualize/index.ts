@@ -21,13 +21,13 @@ class AudioVisualize {
     private gainNode: GainNode;
     private panner: StereoPannerNode;
     private playState: boolean;
-    private handler: EventListenerObject;
+    private playListener: EventListenerObject;
+    private analyser: AnalyserNode;
     // 构造函数
     public constructor (params: Params) {
         if (!document || !window) {
             throw Error('document not loaded');
         }
-        this.playState = false;
         if (params.playButton) {
             this.playButton = document.querySelector(params.playButton);
         }
@@ -48,6 +48,10 @@ class AudioVisualize {
         this.audioContext = new AudioContext();
         this.track = this.audioContext.createMediaElementSource(this.audioElement);
     }
+    // connect to audio track
+    private setTrack () {
+        this.track.connect(this.gainNode).connect(this.panner).connect(this.analyser).connect(this.audioContext.destination); 
+    }
 
     private playHandler () {
         if (this.audioContext.state === 'suspended') {
@@ -67,11 +71,11 @@ class AudioVisualize {
         if (!this.audioElement || !this.playButton || !this.audioContext) return;
         let slef = this;
         this.audioContext.resume().then(() => {
-            if (this.handler) {
-                this.playButton.removeEventListener('click', this.handler, false);
+            if (this.playListener) {
+                this.playButton.removeEventListener('click', this.playListener, false);
             }
-            this.handler = this.playHandler.bind(this);
-            this.playButton.addEventListener('click', this.handler, false);
+            this.playListener = this.playHandler.bind(this);
+            this.playButton.addEventListener('click', this.playListener, false);
             this.audioElement.addEventListener('ended', function () {
                 slef.playState === false;
             }, false);
@@ -79,20 +83,23 @@ class AudioVisualize {
     }
     // control volume and panner
     public enableControls (): void {
-
         if (!this.volControl || !this.panControl || !this.track || !this.audioContext) {
             return;
         }
-        let self = this, pannerOptions = { pan: 0 };
-        this.gainNode = new GainNode(this.audioContext);
-        this.panner = new StereoPannerNode(this.audioContext, pannerOptions);
+        let pannerOptions = { pan: 0 };
+        console.log( this.audioContext.createGain);
+        // this.gainNode = this.audioContext.createGain();
+        this.gainNode = this.audioContext.createGain();
+        this.panner = this.audioContext.createStereoPanner();
+        this.panner.pan.value = 0.0;
+        let self = this; 
         this.volControl.addEventListener('input', function () {
             self.gainNode.gain.value = Number(this.value);
-            self.track.connect(self.gainNode).connect(self.panner).connect(self.audioContext.destination);
+            self.setTrack();
         }, false);
         this.panControl.addEventListener('input', function () {
             self.panner.pan.value = Number(this.value);
-            self.track.connect(self.gainNode).connect(self.panner).connect(self.audioContext.destination);
+            self.setTrack();
         }, false);
     }
 
@@ -113,7 +120,7 @@ class AudioVisualize {
         while (index) {
             value = dataArray[index * step + step];
             x = index * lineWidth;
-            y = HEIGHT - value;
+            y = HEIGHT - value * 1.5;
             canvasCtx.beginPath();
             canvasCtx.strokeStyle = "#fff";
             canvasCtx.moveTo(x, HEIGHT);
@@ -128,14 +135,14 @@ class AudioVisualize {
         if (!this.audioContext || !this.visualCanvas) return;
         if (this.visualCanvas.getContext('2d')) {
             let canvasCtx = this.visualCanvas.getContext('2d'),
-                analyser = this.audioContext.createAnalyser(),
                 WIDTH = this.visualCanvas.width,
                 HEIGHT = this.visualCanvas.height;
-            this.track.connect(this.gainNode).connect(this.panner).connect(analyser).connect(this.audioContext.destination);
-            let dataArray = new Uint8Array(analyser.frequencyBinCount);
+            this.analyser = this.audioContext.createAnalyser();
+            this.setTrack();
+            let dataArray = new Uint8Array(this.analyser.frequencyBinCount);
             let count = Math.min(50, dataArray.length)
             // draw an oscilloscope of the current audio source
-            this.draw(analyser, dataArray, canvasCtx, WIDTH, HEIGHT, count);
+            this.draw(this.analyser, dataArray, canvasCtx, WIDTH, HEIGHT, count);
         }
     }
 }

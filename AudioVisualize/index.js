@@ -5,7 +5,6 @@ var AudioVisualize = /** @class */ (function () {
         if (!document || !window) {
             throw Error('document not loaded');
         }
-        this.playState = false;
         if (params.playButton) {
             this.playButton = document.querySelector(params.playButton);
         }
@@ -24,6 +23,10 @@ var AudioVisualize = /** @class */ (function () {
         this.audioElement.load();
         this.audioContext = new AudioContext();
         this.track = this.audioContext.createMediaElementSource(this.audioElement);
+    };
+    // connect to audio track
+    AudioVisualize.prototype.setTrack = function () {
+        this.track.connect(this.gainNode).connect(this.panner).connect(this.analyser).connect(this.audioContext.destination);
     };
     AudioVisualize.prototype.playHandler = function () {
         if (this.audioContext.state === 'suspended') {
@@ -46,11 +49,11 @@ var AudioVisualize = /** @class */ (function () {
             return;
         var slef = this;
         this.audioContext.resume().then(function () {
-            if (_this.handler) {
-                _this.playButton.removeEventListener('click', _this.handler, false);
+            if (_this.playListener) {
+                _this.playButton.removeEventListener('click', _this.playListener, false);
             }
-            _this.handler = _this.playHandler.bind(_this);
-            _this.playButton.addEventListener('click', _this.handler, false);
+            _this.playListener = _this.playHandler.bind(_this);
+            _this.playButton.addEventListener('click', _this.playListener, false);
             _this.audioElement.addEventListener('ended', function () {
                 slef.playState === false;
             }, false);
@@ -61,16 +64,20 @@ var AudioVisualize = /** @class */ (function () {
         if (!this.volControl || !this.panControl || !this.track || !this.audioContext) {
             return;
         }
-        var self = this, pannerOptions = { pan: 0 };
-        this.gainNode = new GainNode(this.audioContext);
-        this.panner = new StereoPannerNode(this.audioContext, pannerOptions);
+        var pannerOptions = { pan: 0 };
+        console.log(this.audioContext.createGain);
+        // this.gainNode = this.audioContext.createGain();
+        this.gainNode = this.audioContext.createGain();
+        this.panner = this.audioContext.createStereoPanner();
+        this.panner.pan.value = 0.0;
+        var self = this;
         this.volControl.addEventListener('input', function () {
             self.gainNode.gain.value = Number(this.value);
-            self.track.connect(self.gainNode).connect(self.panner).connect(self.audioContext.destination);
+            self.setTrack();
         }, false);
         this.panControl.addEventListener('input', function () {
             self.panner.pan.value = Number(this.value);
-            self.track.connect(self.gainNode).connect(self.panner).connect(self.audioContext.destination);
+            self.setTrack();
         }, false);
     };
     AudioVisualize.prototype.draw = function (analyser, dataArray, canvasCtx, WIDTH, HEIGHT, count) {
@@ -81,7 +88,7 @@ var AudioVisualize = /** @class */ (function () {
         while (index) {
             value = dataArray[index * step + step];
             x = index * lineWidth;
-            y = HEIGHT - value;
+            y = HEIGHT - value * 1.5;
             canvasCtx.beginPath();
             canvasCtx.strokeStyle = "#fff";
             canvasCtx.moveTo(x, HEIGHT);
@@ -97,12 +104,13 @@ var AudioVisualize = /** @class */ (function () {
         if (!this.audioContext || !this.visualCanvas)
             return;
         if (this.visualCanvas.getContext('2d')) {
-            var canvasCtx = this.visualCanvas.getContext('2d'), analyser = this.audioContext.createAnalyser(), WIDTH = this.visualCanvas.width, HEIGHT = this.visualCanvas.height;
-            this.track.connect(this.gainNode).connect(this.panner).connect(analyser).connect(this.audioContext.destination);
-            var dataArray = new Uint8Array(analyser.frequencyBinCount);
+            var canvasCtx = this.visualCanvas.getContext('2d'), WIDTH = this.visualCanvas.width, HEIGHT = this.visualCanvas.height;
+            this.analyser = this.audioContext.createAnalyser();
+            this.setTrack();
+            var dataArray = new Uint8Array(this.analyser.frequencyBinCount);
             var count = Math.min(50, dataArray.length);
             // draw an oscilloscope of the current audio source
-            this.draw(analyser, dataArray, canvasCtx, WIDTH, HEIGHT, count);
+            this.draw(this.analyser, dataArray, canvasCtx, WIDTH, HEIGHT, count);
         }
     };
     return AudioVisualize;
