@@ -81,6 +81,8 @@ aside .cassette {
     align-items: center;
     cursor: pointer;
     transition: transform 1000ms ease-in;
+    background-color: var(--main-color);
+    z-index: 99;
 }
 #info-circle > div {
     width: 80px;

@@ -173,44 +173,42 @@
     </main>
     <script type="application/javascript" src="./AudioVisualize/index.js"></script>
     <script>
-        let av = new AudioVisualize({
-            playButton: '.control-play',
-            volControl: '#volume',
-            panControl: '#panner',
-            visualCanvas: '.audio-analyse'
-        }),
-            cards = document.querySelector('.cards'),
-            tapeBox;
-            curAudio = '';
+        window.onload = function () {
+            let av = new AudioVisualize({
+                playButton: '.control-play',
+                volControl: '#volume',
+                panControl: '#panner',
+                visualCanvas: '.audio-analyse'
+            }),
+                cards = document.querySelectorAll('.cards .card'),
+                tapeBox,
+                curAudio = '',
+                cloneCards = [];
 
-        function reset(id) {
-            av.setAudio('.cassette-box audio');
-            av.enableControls();
-            av.enableAnalyse();
-            curAudio = id;
-        }
-
-        cards.addEventListener('click', function (e) {
-            if (e.target.classList.value.includes('cassette')) {
-                let node = e.target;
-                while (node) {
-                    if (node.classList.value.includes('card')) {
-                        let id = '#' + node.id;
-                        if (id !== curAudio) {
-                            let tapeBox = document.querySelector('.cassette-box > div')
-                            let target = document.querySelector(id).cloneNode(true);
-                            tapeBox.replaceWith(target);
+            function reset(id) {
+                av.setAudio('.cassette-box audio');
+                av.enableControls();
+                av.enableAnalyse();
+                curAudio = id;
+            }
+            cards.forEach((card, index) => {
+                cloneCards.push(card.cloneNode(true));
+                card.addEventListener('click', function (e) {
+                    let id = '#' + card.id;
+                    if (id !== curAudio) {
+                        let tapeBox = document.querySelector('.cassette-box > div')
+                        let target = cloneCards[index];
+                        tapeBox.replaceWith(target);
+                        if (target) {
                             reset(id);
                         }
-                        break;
-                    } else {
-                        node = node.parentNode;
                     }
-                }
-
-            }
-        }, false);
-
+                }, false);
+            })
+        }
+        window.onbeforeunload = function () {
+            av = null;
+        }
     </script>
 </body>
 
