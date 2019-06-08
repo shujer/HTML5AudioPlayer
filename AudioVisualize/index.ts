@@ -70,9 +70,9 @@ class AudioVisualize {
     // connect to audio track
     private setTrack () {
         this.track.connect(this.gainNode)
-            .connect(this.panner)
-            .connect(this.analyser)
-            .connect(this.audioContext.destination);
+                  .connect(this.panner)
+                  .connect(this.analyser)
+                  .connect(this.audioContext.destination);
     }
 
     private playHandler () {

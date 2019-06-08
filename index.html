@@ -5,7 +5,7 @@
     <title></title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link href="css/style.css" rel="stylesheet">
 </head>
 
@@ -172,7 +172,7 @@
         </div>
     </main>
     <script type="application/javascript" src="./AudioVisualize/index.js"></script>
-    <script>
+    <script type="application/javascript">
         window.onload = function () {
             let av = new AudioVisualize({
                 playButton: '.control-play',
@@ -191,7 +191,7 @@
                 av.enableAnalyse();
                 curAudio = id;
             }
-            cards.forEach((card, index) => {
+            cards.forEach(function (card, index) {
                 cloneCards.push(card.cloneNode(true));
                 card.addEventListener('click', function (e) {
                     let id = '#' + card.id;

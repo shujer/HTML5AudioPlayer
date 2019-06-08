@@ -557,6 +557,7 @@ input[type=range] {
     -webkit-appearance: none;
     width: 80%;
     background: transparent;
+    outline: none;
 }
 
 input[type=range]::-ms-track {
@@ -617,7 +618,7 @@ input[type=range]::-webkit-slider-runnable-track {
 }
 
 input[type=range]::-moz-range-track {
-    height: 20px;
+    height: 15px;
     cursor: pointer;
     background-color: var(--border-color);
     border-radius: var(--border-color);
