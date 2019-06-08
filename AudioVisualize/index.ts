@@ -69,13 +69,13 @@ class AudioVisualize {
 
     // connect to audio track
     private setTrack () {
-        this.track.connect(this.gainNode).connect(this.panner).connect(this.analyser).connect(this.audioContext.destination);
+        this.track.connect(this.gainNode)
+            .connect(this.panner)
+            .connect(this.analyser)
+            .connect(this.audioContext.destination);
     }
 
     private playHandler () {
-        if (this.audioContext.state === 'suspended') {
-            this.audioContext.resume();
-        }
         if (this.playState === false) {
             this.audioElement.play();
             this.playState = true;
@@ -163,7 +163,7 @@ class AudioVisualize {
             this.analyser = this.audioContext.createAnalyser();
             this.setTrack();
             let dataArray = new Uint8Array(this.analyser.frequencyBinCount);
-            let count = Math.min(50, dataArray.length)
+            let count = Math.min(70, dataArray.length)
             // draw an oscilloscope of the current audio source
             this.draw(this.analyser, dataArray, canvasCtx, WIDTH, HEIGHT, count);
         }

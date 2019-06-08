@@ -40,12 +40,12 @@ var AudioVisualize = /** @class */ (function () {
     };
     // connect to audio track
     AudioVisualize.prototype.setTrack = function () {
-        this.track.connect(this.gainNode).connect(this.panner).connect(this.analyser).connect(this.audioContext.destination);
+        this.track.connect(this.gainNode)
+            .connect(this.panner)
+            .connect(this.analyser)
+            .connect(this.audioContext.destination);
     };
     AudioVisualize.prototype.playHandler = function () {
-        if (this.audioContext.state === 'suspended') {
-            this.audioContext.resume();
-        }
         if (this.playState === false) {
             this.audioElement.play();
             this.playState = true;
@@ -126,7 +126,7 @@ var AudioVisualize = /** @class */ (function () {
             this.analyser = this.audioContext.createAnalyser();
             this.setTrack();
             var dataArray = new Uint8Array(this.analyser.frequencyBinCount);
-            var count = Math.min(50, dataArray.length);
+            var count = Math.min(70, dataArray.length);
             // draw an oscilloscope of the current audio source
             this.draw(this.analyser, dataArray, canvasCtx, WIDTH, HEIGHT, count);
         }
