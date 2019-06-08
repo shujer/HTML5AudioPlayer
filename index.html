@@ -111,6 +111,10 @@
             </div>
         </div>
     </aside>
+    <div id="info-circle" onclick="this.style.transform='scale3d(0, 0, 0)'">
+        <div>Click Left</div>
+        <div>To Play</div>
+    </div>
     <main>
         <!-- boom box -->
         <div class="boom-box">
@@ -181,11 +185,9 @@
 
         function reset(id) {
             av.setAudio('.cassette-box audio');
-            av.enablePlay();
             av.enableControls();
             av.enableAnalyse();
             curAudio = id;
-            // document.querySelector('.cassette-box audio').play();
         }
 
         cards.addEventListener('click', function (e) {

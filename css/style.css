@@ -13,8 +13,11 @@
 html,
 body {
     width: 100%;
-    min-height: 100%;
-    margin: 0;
+    height: 100%;
+}
+
+body {
+    font-family: Palatino, cursive, 'Courier New', Helvetica, serif;
     font-size: 14px;
     display: -webkit-box;
     display: -ms-flexbox;
@@ -24,7 +27,6 @@ body {
     justify-content: center;
     background: var(--main-color);
     color: var(--border-color);
-    font-family: 'Patrick Hand SC', cursive;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     /* Firefox */
@@ -55,6 +57,39 @@ aside .cassette {
     margin: 20px auto;
 }
 
+#info-circle {
+    position: fixed;
+    top: 40px;
+    left: calc(var(--cassette-size) * 1.2);
+    width: 60px;
+    height: 60px;
+    padding: 10px;
+    border-radius: 50%;
+    border: dashed var(--border-weight) var(--border-color);
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 1000ms ease-in;
+}
+#info-circle > div {
+    width: 80px;
+    font-size: 14px;
+    text-align: center;
+    cursor: pointer;
+}
+
+
 /* cassette */
 .cassette {
     margin: auto auto;
@@ -70,10 +105,10 @@ aside .cassette {
     -o-border-radius: var(--border-weight);
     -webkit-box-shadow: 0 0 10px lightgray;
     box-shadow: 0 0 10px lightgray;
-    z-index: 9;
+    cursor: pointer;
 }
 
-.cassette:hover {
+.cards .cassette:hover {
     -webkit-transform: scale3d(1.05, 1.05, 1) translate3d(0, 0, 0);
     -moz-transform: scale3d(1.05, 1.05, 1) translate3d(0, 0, 0);
     -ms-transform: scale3d(1.05, 1.05, 1) translate3d(0, 0, 0);
@@ -499,7 +534,14 @@ fieldset {
     padding: 0;
     height: 20px;
     width: var(--cassette-size);
+    cursor: pointer;
 }
+.boom-bottom .control-play:hover {
+    box-shadow: 0 1px 2px lightgray;
+    height: 20px;
+    width: calc(var(--cassette-size) + 4px);
+}
+
 
 
 /* data item */
