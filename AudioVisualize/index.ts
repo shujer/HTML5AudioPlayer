@@ -28,11 +28,23 @@ class AudioVisualize {
         if (!document || !window) {
             throw Error('document not loaded');
         }
+
+        if (params.audio) {
+            this.playState = false;
+            this.audioElement = document.querySelector(params.audio);
+            this.audioElement.load();
+            this.audioContext = new AudioContext();
+            this.track = this.audioContext.createMediaElementSource(this.audioElement);
+        }
+
         if (params.playButton) {
             this.playButton = document.querySelector(params.playButton);
         }
-        if (params.volControl && params.panControl) {
+        if (params.volControl) {
             this.volControl = document.querySelector(params.volControl);
+
+        }
+        if (params.panControl) {
             this.panControl = document.querySelector(params.panControl);
         }
         if (params.visualCanvas) {
@@ -48,9 +60,16 @@ class AudioVisualize {
         this.audioContext = new AudioContext();
         this.track = this.audioContext.createMediaElementSource(this.audioElement);
     }
+
+    public enableControls () {
+        this.enableVolume();
+        this.enablePanner();
+        this.enablePlay();
+    }
+
     // connect to audio track
     private setTrack () {
-        this.track.connect(this.gainNode).connect(this.panner).connect(this.analyser).connect(this.audioContext.destination); 
+        this.track.connect(this.gainNode).connect(this.panner).connect(this.analyser).connect(this.audioContext.destination);
     }
 
     private playHandler () {
@@ -67,7 +86,7 @@ class AudioVisualize {
         this.playButton.setAttribute('data-playing', this.playState ? "true" : "false");
     }
     // control play
-    public enablePlay (): void {
+    private enablePlay (): void {
         if (!this.audioElement || !this.playButton || !this.audioContext) return;
         let slef = this;
         this.audioContext.resume().then(() => {
@@ -81,20 +100,26 @@ class AudioVisualize {
             }, false);
         }).catch(err => { console.log(err) });
     }
-    // control volume and panner
-    public enableControls (): void {
-        if (!this.volControl || !this.panControl || !this.track || !this.audioContext) {
+    // control volume
+    private enableVolume (): void {
+        if (!this.volControl || !this.track || !this.audioContext) {
             return;
         }
-        let pannerOptions = { pan: 0 };
         this.gainNode = this.audioContext.createGain();
-        this.panner = this.audioContext.createStereoPanner();
-        this.panner.pan.value = 0.0;
-        let self = this; 
+        let self = this;
         this.volControl.addEventListener('input', function () {
             self.gainNode.gain.value = Number(this.value);
             self.setTrack();
         }, false);
+    }
+    // control panner
+    private enablePanner (): void {
+        if (!this.volControl || !this.panControl || !this.track || !this.audioContext) {
+            return;
+        }
+        this.panner = this.audioContext.createStereoPanner();
+        this.panner.pan.value = 0.0;
+        let self = this;
         this.panControl.addEventListener('input', function () {
             self.panner.pan.value = Number(this.value);
             self.setTrack();
@@ -128,7 +153,7 @@ class AudioVisualize {
         }
         requestAnimationFrame(() => this.draw(analyser, dataArray, canvasCtx, WIDTH, HEIGHT, count));
     };
-    // visualize
+    // controls visualize
     public enableAnalyse (): void {
         if (!this.audioContext || !this.visualCanvas) return;
         if (this.visualCanvas.getContext('2d')) {

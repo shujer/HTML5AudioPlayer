@@ -5,11 +5,20 @@ var AudioVisualize = /** @class */ (function () {
         if (!document || !window) {
             throw Error('document not loaded');
         }
+        if (params.audio) {
+            this.playState = false;
+            this.audioElement = document.querySelector(params.audio);
+            this.audioElement.load();
+            this.audioContext = new AudioContext();
+            this.track = this.audioContext.createMediaElementSource(this.audioElement);
+        }
         if (params.playButton) {
             this.playButton = document.querySelector(params.playButton);
         }
-        if (params.volControl && params.panControl) {
+        if (params.volControl) {
             this.volControl = document.querySelector(params.volControl);
+        }
+        if (params.panControl) {
             this.panControl = document.querySelector(params.panControl);
         }
         if (params.visualCanvas) {
@@ -23,6 +32,11 @@ var AudioVisualize = /** @class */ (function () {
         this.audioElement.load();
         this.audioContext = new AudioContext();
         this.track = this.audioContext.createMediaElementSource(this.audioElement);
+    };
+    AudioVisualize.prototype.enableControls = function () {
+        this.enableVolume();
+        this.enablePanner();
+        this.enablePlay();
     };
     // connect to audio track
     AudioVisualize.prototype.setTrack = function () {
@@ -59,22 +73,26 @@ var AudioVisualize = /** @class */ (function () {
             }, false);
         })["catch"](function (err) { console.log(err); });
     };
-    // control volume and panner
-    AudioVisualize.prototype.enableControls = function () {
-        if (!this.volControl || !this.panControl || !this.track || !this.audioContext) {
+    // control volume
+    AudioVisualize.prototype.enableVolume = function () {
+        if (!this.volControl || !this.track || !this.audioContext) {
             return;
         }
-        var pannerOptions = { pan: 0 };
-        console.log(this.audioContext.createGain);
-        // this.gainNode = this.audioContext.createGain();
         this.gainNode = this.audioContext.createGain();
-        this.panner = this.audioContext.createStereoPanner();
-        this.panner.pan.value = 0.0;
         var self = this;
         this.volControl.addEventListener('input', function () {
             self.gainNode.gain.value = Number(this.value);
             self.setTrack();
         }, false);
+    };
+    // control panner
+    AudioVisualize.prototype.enablePanner = function () {
+        if (!this.volControl || !this.panControl || !this.track || !this.audioContext) {
+            return;
+        }
+        this.panner = this.audioContext.createStereoPanner();
+        this.panner.pan.value = 0.0;
+        var self = this;
         this.panControl.addEventListener('input', function () {
             self.panner.pan.value = Number(this.value);
             self.setTrack();
@@ -99,7 +117,7 @@ var AudioVisualize = /** @class */ (function () {
         requestAnimationFrame(function () { return _this.draw(analyser, dataArray, canvasCtx, WIDTH, HEIGHT, count); });
     };
     ;
-    // visualize
+    // controls visualize
     AudioVisualize.prototype.enableAnalyse = function () {
         if (!this.audioContext || !this.visualCanvas)
             return;
