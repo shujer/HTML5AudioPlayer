@@ -28,7 +28,6 @@ class AudioVisualize {
     private analyser: AnalyserNode;
     private playList: PlayList[];
     private playState: boolean;
-    private playListener: EventListenerObject;
     // 构造函数
     public constructor (params: Params) {
         if (!document || !window) {
@@ -58,9 +57,12 @@ class AudioVisualize {
         if (!this.playButton || !this.volControl || !this.panControl || !this.visualCanvas) {
             throw ReferenceError('selector not valied');
         }
+        this.enablePlay();
     }
 
+    // reset play list
     public resetPlayList (playList: PlayList[]): void {
+        this.playState = false;
         this.track && this.track.disconnect();
         this.gainNode && this.gainNode.disconnect();
         this.panner && this.panner.disconnect();
@@ -68,10 +70,11 @@ class AudioVisualize {
         this.playList = playList;
         this.audioElement.src = "";
     }
-
+    // change current audio
     public changeAudio (index: number): boolean {
         let idx = index || 0;
         if (this.playList.length <= 0 || idx > this.playList.length) return false;
+        this.playState = false;
         this.track && this.track.disconnect();
         this.gainNode && this.gainNode.disconnect();
         this.panner && this.panner.disconnect();
@@ -86,7 +89,6 @@ class AudioVisualize {
         this.enableVolume();
         this.enablePanner();
         this.enableAnalyse();
-        this.enablePlay();
     }
 
     // connect to audio track
@@ -110,16 +112,12 @@ class AudioVisualize {
     }
     // control play
     private enablePlay (): void {
-        let slef = this;
         if (!this.audioElement || !this.playButton || !this.audioContext) return;
         this.audioContext.resume().then(() => {
-            if (this.playListener) {
-                this.playButton.removeEventListener('click', this.playListener, false);
-            }
-            this.playListener = this.playHandler.bind(this);
-            this.playButton.addEventListener('click', this.playListener, false);
-            this.audioElement.addEventListener('ended', function () {
-                slef.playState === false;
+            this.playButton.addEventListener('click', this.playHandler.bind(this), false);
+            this.audioElement.addEventListener('ended', () => {
+                this.playState = false;
+                this.playButton.dataset.playing = 'false';
             }, false);
         }).catch(err => { console.log(err) });
     }
@@ -129,7 +127,6 @@ class AudioVisualize {
         if (!this.volControl || !this.track || !this.audioContext) {
             return;
         }
-        this.gainNode && this.gainNode.disconnect();
         this.gainNode = this.audioContext.createGain();
         this.volControl.addEventListener('input', function () {
             self.gainNode.gain.value = Number(this.value);
@@ -165,12 +162,12 @@ class AudioVisualize {
             y = 0,
             lineWidth = canvasCtx.lineWidth = WIDTH / count,
             index = count;
+        canvasCtx.strokeStyle = "#fff";
         while (index) {
             value = dataArray[index * step + step];
             x = index * lineWidth;
             y = HEIGHT - value * 1.5;
             canvasCtx.beginPath();
-            canvasCtx.strokeStyle = "#fff";
             canvasCtx.moveTo(x, HEIGHT);
             canvasCtx.lineTo(x, y);
             canvasCtx.stroke();

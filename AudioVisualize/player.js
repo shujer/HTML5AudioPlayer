@@ -28,8 +28,11 @@ var AudioVisualize = /** @class */ (function () {
         if (!this.playButton || !this.volControl || !this.panControl || !this.visualCanvas) {
             throw ReferenceError('selector not valied');
         }
+        this.enablePlay();
     }
+    // reset play list
     AudioVisualize.prototype.resetPlayList = function (playList) {
+        this.playState = false;
         this.track && this.track.disconnect();
         this.gainNode && this.gainNode.disconnect();
         this.panner && this.panner.disconnect();
@@ -37,10 +40,12 @@ var AudioVisualize = /** @class */ (function () {
         this.playList = playList;
         this.audioElement.src = "";
     };
+    // change current audio
     AudioVisualize.prototype.changeAudio = function (index) {
         var idx = index || 0;
         if (this.playList.length <= 0 || idx > this.playList.length)
             return false;
+        this.playState = false;
         this.track && this.track.disconnect();
         this.gainNode && this.gainNode.disconnect();
         this.panner && this.panner.disconnect();
@@ -54,7 +59,6 @@ var AudioVisualize = /** @class */ (function () {
         this.enableVolume();
         this.enablePanner();
         this.enableAnalyse();
-        this.enablePlay();
     };
     // connect to audio track
     AudioVisualize.prototype.setTrack = function () {
@@ -78,17 +82,13 @@ var AudioVisualize = /** @class */ (function () {
     // control play
     AudioVisualize.prototype.enablePlay = function () {
         var _this = this;
-        var slef = this;
         if (!this.audioElement || !this.playButton || !this.audioContext)
             return;
         this.audioContext.resume().then(function () {
-            if (_this.playListener) {
-                _this.playButton.removeEventListener('click', _this.playListener, false);
-            }
-            _this.playListener = _this.playHandler.bind(_this);
-            _this.playButton.addEventListener('click', _this.playListener, false);
+            _this.playButton.addEventListener('click', _this.playHandler.bind(_this), false);
             _this.audioElement.addEventListener('ended', function () {
-                slef.playState === false;
+                _this.playState = false;
+                _this.playButton.dataset.playing = 'false';
             }, false);
         })["catch"](function (err) { console.log(err); });
     };
@@ -98,7 +98,6 @@ var AudioVisualize = /** @class */ (function () {
         if (!this.volControl || !this.track || !this.audioContext) {
             return;
         }
-        this.gainNode && this.gainNode.disconnect();
         this.gainNode = this.audioContext.createGain();
         this.volControl.addEventListener('input', function () {
             self.gainNode.gain.value = Number(this.value);
@@ -124,12 +123,12 @@ var AudioVisualize = /** @class */ (function () {
         canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
         analyser.getByteFrequencyData(dataArray);
         var value = 0, step = Math.round(dataArray.length / count), x = 0, y = 0, lineWidth = canvasCtx.lineWidth = WIDTH / count, index = count;
+        canvasCtx.strokeStyle = "#fff";
         while (index) {
             value = dataArray[index * step + step];
             x = index * lineWidth;
             y = HEIGHT - value * 1.5;
             canvasCtx.beginPath();
-            canvasCtx.strokeStyle = "#fff";
             canvasCtx.moveTo(x, HEIGHT);
             canvasCtx.lineTo(x, y);
             canvasCtx.stroke();
