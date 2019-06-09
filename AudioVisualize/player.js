@@ -28,7 +28,6 @@ var AudioVisualize = /** @class */ (function () {
         if (!this.playButton || !this.volControl || !this.panControl || !this.visualCanvas) {
             throw ReferenceError('selector not valied');
         }
-        this.enablePlay();
     }
     // reset play list
     AudioVisualize.prototype.resetPlayList = function (playList) {
@@ -56,6 +55,7 @@ var AudioVisualize = /** @class */ (function () {
         return true;
     };
     AudioVisualize.prototype._enableControls = function () {
+        this.enablePlay();
         this.enableVolume();
         this.enablePanner();
         this.enableAnalyse();
@@ -85,7 +85,11 @@ var AudioVisualize = /** @class */ (function () {
         if (!this.audioElement || !this.playButton || !this.audioContext)
             return;
         this.audioContext.resume().then(function () {
-            _this.playButton.addEventListener('click', _this.playHandler.bind(_this), false);
+            if (_this.playListener) {
+                _this.playButton.removeEventListener('click', _this.playListener, false);
+            }
+            _this.playListener = _this.playHandler.bind(_this);
+            _this.playButton.addEventListener('click', _this.playListener, false);
             _this.audioElement.addEventListener('ended', function () {
                 _this.playState = false;
                 _this.playButton.dataset.playing = 'false';

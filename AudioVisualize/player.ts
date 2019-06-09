@@ -5,10 +5,10 @@ interface Params {
     volControl: string;
     panControl: string;
     visualCanvas: string;
-    playList: PlayList[];
+    playList: PlayItem[];
 }
 
-interface PlayList {
+interface PlayItem {
     src: string;
     type: string;
 }
@@ -26,8 +26,9 @@ class AudioVisualize {
     private gainNode: GainNode;
     private panner: StereoPannerNode;
     private analyser: AnalyserNode;
-    private playList: PlayList[];
+    private playList: PlayItem[];
     private playState: boolean;
+    private playListener: EventListenerObject;
     // 构造函数
     public constructor (params: Params) {
         if (!document || !window) {
@@ -57,11 +58,10 @@ class AudioVisualize {
         if (!this.playButton || !this.volControl || !this.panControl || !this.visualCanvas) {
             throw ReferenceError('selector not valied');
         }
-        this.enablePlay();
     }
 
     // reset play list
-    public resetPlayList (playList: PlayList[]): void {
+    public resetPlayList (playList: PlayItem[]): void {
         this.playState = false;
         this.track && this.track.disconnect();
         this.gainNode && this.gainNode.disconnect();
@@ -86,6 +86,7 @@ class AudioVisualize {
     }
 
     private _enableControls () {
+        this.enablePlay();
         this.enableVolume();
         this.enablePanner();
         this.enableAnalyse();
@@ -114,7 +115,11 @@ class AudioVisualize {
     private enablePlay (): void {
         if (!this.audioElement || !this.playButton || !this.audioContext) return;
         this.audioContext.resume().then(() => {
-            this.playButton.addEventListener('click', this.playHandler.bind(this), false);
+            if (this.playListener) {
+                this.playButton.removeEventListener('click', this.playListener, false);
+            }
+            this.playListener = this.playHandler.bind(this);
+            this.playButton.addEventListener('click', this.playListener, false);
             this.audioElement.addEventListener('ended', () => {
                 this.playState = false;
                 this.playButton.dataset.playing = 'false';
