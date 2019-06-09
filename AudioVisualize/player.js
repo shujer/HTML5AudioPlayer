@@ -28,6 +28,7 @@ var AudioVisualize = /** @class */ (function () {
         if (!this.playButton || !this.volControl || !this.panControl || !this.visualCanvas) {
             throw ReferenceError('selector not valied');
         }
+        this.enablePlay();
     }
     // reset play list
     AudioVisualize.prototype.resetPlayList = function (playList) {
@@ -55,7 +56,6 @@ var AudioVisualize = /** @class */ (function () {
         return true;
     };
     AudioVisualize.prototype._enableControls = function () {
-        this.enablePlay();
         this.enableVolume();
         this.enablePanner();
         this.enableAnalyse();
@@ -85,11 +85,7 @@ var AudioVisualize = /** @class */ (function () {
         if (!this.audioElement || !this.playButton || !this.audioContext)
             return;
         this.audioContext.resume().then(function () {
-            if (_this.playListener) {
-                _this.playButton.removeEventListener('click', _this.playListener, false);
-            }
-            _this.playListener = _this.playHandler.bind(_this);
-            _this.playButton.addEventListener('click', _this.playListener, false);
+            _this.playButton.addEventListener('click', _this.playHandler.bind(_this), false);
             _this.audioElement.addEventListener('ended', function () {
                 _this.playState = false;
                 _this.playButton.dataset.playing = 'false';
@@ -102,6 +98,9 @@ var AudioVisualize = /** @class */ (function () {
         if (!this.volControl || !this.track || !this.audioContext) {
             return;
         }
+        if (this.audioContext.state === 'suspended') {
+            this.audioContext.resume();
+        }
         this.gainNode = this.audioContext.createGain();
         this.volControl.addEventListener('input', function () {
             self.gainNode.gain.value = Number(this.value);
@@ -113,6 +112,9 @@ var AudioVisualize = /** @class */ (function () {
         var self = this;
         if (!this.volControl || !this.panControl || !this.track || !this.audioContext) {
             return;
+        }
+        if (this.audioContext.state === 'suspended') {
+            this.audioContext.resume();
         }
         this.panner = this.audioContext.createStereoPanner();
         this.panner.pan.value = 0.0;
@@ -145,6 +147,9 @@ var AudioVisualize = /** @class */ (function () {
     AudioVisualize.prototype.enableAnalyse = function () {
         if (!this.audioContext || !this.visualCanvas)
             return;
+        if (this.audioContext.state === 'suspended') {
+            this.audioContext.resume();
+        }
         if (this.visualCanvas.getContext('2d')) {
             var canvasCtx = this.visualCanvas.getContext('2d'), WIDTH = this.visualCanvas.width, HEIGHT = this.visualCanvas.height;
             this.analyser = this.audioContext.createAnalyser();

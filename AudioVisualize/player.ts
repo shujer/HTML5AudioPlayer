@@ -28,7 +28,6 @@ class AudioVisualize {
     private analyser: AnalyserNode;
     private playList: PlayItem[];
     private playState: boolean;
-    private playListener: EventListenerObject;
     // 构造函数
     public constructor (params: Params) {
         if (!document || !window) {
@@ -58,6 +57,8 @@ class AudioVisualize {
         if (!this.playButton || !this.volControl || !this.panControl || !this.visualCanvas) {
             throw ReferenceError('selector not valied');
         }
+
+        this.enablePlay();
     }
 
     // reset play list
@@ -86,7 +87,6 @@ class AudioVisualize {
     }
 
     private _enableControls () {
-        this.enablePlay();
         this.enableVolume();
         this.enablePanner();
         this.enableAnalyse();
@@ -115,11 +115,7 @@ class AudioVisualize {
     private enablePlay (): void {
         if (!this.audioElement || !this.playButton || !this.audioContext) return;
         this.audioContext.resume().then(() => {
-            if (this.playListener) {
-                this.playButton.removeEventListener('click', this.playListener, false);
-            }
-            this.playListener = this.playHandler.bind(this);
-            this.playButton.addEventListener('click', this.playListener, false);
+            this.playButton.addEventListener('click', this.playHandler.bind(this), false);
             this.audioElement.addEventListener('ended', () => {
                 this.playState = false;
                 this.playButton.dataset.playing = 'false';
@@ -132,6 +128,9 @@ class AudioVisualize {
         if (!this.volControl || !this.track || !this.audioContext) {
             return;
         }
+        if (this.audioContext.state === 'suspended') {
+            this.audioContext.resume();
+        }
         this.gainNode = this.audioContext.createGain();
         this.volControl.addEventListener('input', function () {
             self.gainNode.gain.value = Number(this.value);
@@ -143,6 +142,9 @@ class AudioVisualize {
         let self = this;
         if (!this.volControl || !this.panControl || !this.track || !this.audioContext) {
             return;
+        }
+        if (this.audioContext.state === 'suspended') {
+            this.audioContext.resume();
         }
         this.panner = this.audioContext.createStereoPanner();
         this.panner.pan.value = 0.0;
@@ -183,6 +185,9 @@ class AudioVisualize {
     // controls visualize
     public enableAnalyse (): void {
         if (!this.audioContext || !this.visualCanvas) return;
+        if (this.audioContext.state === 'suspended') {
+            this.audioContext.resume();
+        }
         if (this.visualCanvas.getContext('2d')) {
             let canvasCtx = this.visualCanvas.getContext('2d'),
                 WIDTH = this.visualCanvas.width,
