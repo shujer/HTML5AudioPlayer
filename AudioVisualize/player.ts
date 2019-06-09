@@ -1,11 +1,16 @@
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Using_Web_Audio_API
 
 interface Params {
-    audio?: string;
-    playButton?: string;
-    volControl?: string;
-    panControl?: string;
-    visualCanvas?: string;
+    playButton: string;
+    volControl: string;
+    panControl: string;
+    visualCanvas: string;
+    playList: PlayList[];
+}
+
+interface PlayList {
+    src: string;
+    type: string;
 }
 
 
@@ -20,75 +25,93 @@ class AudioVisualize {
     private visualCanvas: HTMLCanvasElement;
     private gainNode: GainNode;
     private panner: StereoPannerNode;
+    private analyser: AnalyserNode;
+    private playList: PlayList[];
     private playState: boolean;
     private playListener: EventListenerObject;
-    private analyser: AnalyserNode;
     // 构造函数
     public constructor (params: Params) {
         if (!document || !window) {
             throw Error('document not loaded');
         }
-
-        if (params.audio) {
-            this.playState = false;
-            this.audioElement = document.querySelector(params.audio);
-            this.audioElement.load();
-            this.audioContext = new AudioContext();
-            this.track = this.audioContext.createMediaElementSource(this.audioElement);
+        if (!params.playButton || !params.volControl || !params.panControl || !params.visualCanvas || !params.playList) {
+            throw Error('params missing');
         }
-
-        if (params.playButton) {
-            this.playButton = document.querySelector(params.playButton);
-        }
-        if (params.volControl) {
-            this.volControl = document.querySelector(params.volControl);
-
-        }
-        if (params.panControl) {
-            this.panControl = document.querySelector(params.panControl);
-        }
-        if (params.visualCanvas) {
-            this.visualCanvas = document.querySelector(params.visualCanvas);
-        }
-    }
-
-    // set audio source
-    public setAudio (audio: string): void {
+        // initial player
         this.playState = false;
-        this.audioElement = document.querySelector(audio);
-        this.audioElement.load();
+        this.playList = params.playList;
+        // initial audio element 
+        this.audioElement = new Audio();
+        this.audioElement.preload = 'none';
+        this.audioElement.loop = false;
+        this.audioElement.controls = true;
+        this.audioElement.crossOrigin = "anonymous";
+        // initial audio context 
         this.audioContext = new AudioContext();
         this.track = this.audioContext.createMediaElementSource(this.audioElement);
+        // initial dom selector
+        this.playButton = document.querySelector(params.playButton);
+        this.volControl = document.querySelector(params.volControl);
+        this.panControl = document.querySelector(params.panControl);
+        this.visualCanvas = document.querySelector(params.visualCanvas);
+
+        if (!this.playButton || !this.volControl || !this.panControl || !this.visualCanvas) {
+            throw ReferenceError('selector not valied');
+        }
     }
 
-    public enableControls () {
+    public resetPlayList (playList: PlayList[]): void {
+        this.track && this.track.disconnect();
+        this.gainNode && this.gainNode.disconnect();
+        this.panner && this.panner.disconnect();
+        this.analyser && this.analyser.disconnect();
+        this.playList = playList;
+        this.audioElement.src = "";
+    }
+
+    public changeAudio (index: number): boolean {
+        let idx = index || 0;
+        if (this.playList.length <= 0 || idx > this.playList.length) return false;
+        this.track && this.track.disconnect();
+        this.gainNode && this.gainNode.disconnect();
+        this.panner && this.panner.disconnect();
+        this.analyser && this.analyser.disconnect();
+        this.audioElement.src = this.playList[idx].src;
+        this.audioElement.load();
+        this._enableControls();
+        return true;
+    }
+
+    private _enableControls () {
         this.enableVolume();
         this.enablePanner();
+        this.enableAnalyse();
         this.enablePlay();
     }
 
     // connect to audio track
     private setTrack () {
         this.track.connect(this.gainNode)
-                  .connect(this.panner)
-                  .connect(this.analyser)
-                  .connect(this.audioContext.destination);
+            .connect(this.panner)
+            .connect(this.analyser)
+            .connect(this.audioContext.destination);
     }
 
     private playHandler () {
         if (this.playState === false) {
             this.audioElement.play();
             this.playState = true;
+            this.playButton.dataset.playing = 'true';
         } else {
             this.audioElement.pause();
             this.playState = false;
+            this.playButton.dataset.playing = 'false';
         }
-        this.playButton.setAttribute('data-playing', this.playState ? "true" : "false");
     }
     // control play
     private enablePlay (): void {
-        if (!this.audioElement || !this.playButton || !this.audioContext) return;
         let slef = this;
+        if (!this.audioElement || !this.playButton || !this.audioContext) return;
         this.audioContext.resume().then(() => {
             if (this.playListener) {
                 this.playButton.removeEventListener('click', this.playListener, false);
@@ -102,11 +125,12 @@ class AudioVisualize {
     }
     // control volume
     private enableVolume (): void {
+        let self = this;
         if (!this.volControl || !this.track || !this.audioContext) {
             return;
         }
+        this.gainNode && this.gainNode.disconnect();
         this.gainNode = this.audioContext.createGain();
-        let self = this;
         this.volControl.addEventListener('input', function () {
             self.gainNode.gain.value = Number(this.value);
             self.setTrack();
@@ -114,18 +138,19 @@ class AudioVisualize {
     }
     // control panner
     private enablePanner (): void {
+        let self = this;
         if (!this.volControl || !this.panControl || !this.track || !this.audioContext) {
             return;
         }
         this.panner = this.audioContext.createStereoPanner();
         this.panner.pan.value = 0.0;
-        let self = this;
         this.panControl.addEventListener('input', function () {
             self.panner.pan.value = Number(this.value);
             self.setTrack();
         }, false);
     }
 
+    // drw canvas
     private draw (analyser: AnalyserNode,
         dataArray: Uint8Array,
         canvasCtx: CanvasRenderingContext2D,

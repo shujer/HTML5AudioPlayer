@@ -14,9 +14,6 @@
         <!-- cassette -->
         <div class="cards">
             <div class="cassette card" id="cassette-01">
-                <audio crossorigin="anonymous" preload="none">
-                    <source src="https://epherema.oss-cn-hongkong.aliyuncs.com/music/music.mp3" type="audio/mp3">
-                </audio>
                 <i class="pin-left-top"></i>
                 <i class="pin-right-top"></i>
                 <i class="pin-left-bottom"></i>
@@ -61,11 +58,6 @@
 
             </div>
             <div class="cassette card" id="cassette-02">
-                <audio crossorigin="anonymous" preload="none">
-                    <source
-                        src="https://epherema.oss-cn-hongkong.aliyuncs.com/music/New%20Empire%20-%20A%20Little%20Braver.mp3"
-                        type="audio/mp3">
-                </audio>
                 <i class="pin-left-top"></i>
                 <i class="pin-right-top"></i>
                 <i class="pin-left-bottom"></i>
@@ -171,39 +163,42 @@
             </div>
         </div>
     </main>
-    <script type="application/javascript" src="./AudioVisualize/index.js"></script>
+    <script type="application/javascript" src="./AudioVisualize/player.js"></script>
     <script type="application/javascript">
+        const audioList = [
+            { src: 'https://epherema.oss-cn-hongkong.aliyuncs.com/music/music.mp3', type: 'audio/mp3' },
+            { src: 'https://epherema.oss-cn-hongkong.aliyuncs.com/music/New%20Empire%20-%20A%20Little%20Braver.mp3', type: 'audio/mp3' }
+        ]
         window.onload = function () {
             let av = new AudioVisualize({
+                playList: audioList,
                 playButton: '.control-play',
                 volControl: '#volume',
                 panControl: '#panner',
                 visualCanvas: '.audio-analyse'
             }),
                 cards = document.querySelectorAll('.cards .card'),
+                box = document.querySelector('.cassette-box'),
                 tapeBox,
                 curAudio = '',
-                cloneCards = [];
+                cloneCards = {};
 
-            function reset(id) {
-                av.setAudio('.cassette-box audio');
-                av.enableControls();
-                av.enableAnalyse();
-                curAudio = id;
+            function reset(index) {
+                av.changeAudio(index);
+                curAudio = index;
             }
             cards.forEach(function (card, index) {
-                cloneCards.push(card.cloneNode(true));
-                card.addEventListener('click', function (e) {
-                    let id = '#' + card.id;
-                    if (id !== curAudio) {
-                        let tapeBox = document.querySelector('.cassette-box > div')
-                        let target = cloneCards[index];
-                        tapeBox.replaceWith(target);
-                        if (target) {
-                            reset(id);
+                cloneCards[index] = card.cloneNode(true);
+                card.addEventListener('click', (function (index) {
+                    return function (e) {
+                        if (index !== curAudio) {
+                            let tapeBox = document.querySelector('.cassette-box > div');
+                            let target = cloneCards[index];
+                            box.replaceChild(target, tapeBox);
+                            reset(index);
                         }
                     }
-                }, false);
+                })(index), false);
             })
         }
         window.onbeforeunload = function () {
